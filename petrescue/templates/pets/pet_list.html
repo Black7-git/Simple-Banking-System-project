@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Pets - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Search Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Search Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <div class="mb-3">
+                            <label for="{{ form.query.id_for_label }}" class="form-label">Search</label>
+                            {{ form.query }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.pet_type.id_for_label }}" class="form-label">Pet Type</label>
+                            {{ form.pet_type }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                            {{ form.status }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.size.id_for_label }}" class="form-label">Size</label>
+                            {{ form.size }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search me-2"></i>Apply Filters
+                        </button>
+                        
+                        <a href="{% url 'pets:list' %}" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="bi bi-x-circle me-2"></i>Clear Filters
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pet Results -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-search me-2"></i>Find Pets
+                    {% if page_obj.paginator.count %}
+                        <small class="text-muted">({{ page_obj.paginator.count }} result{{ page_obj.paginator.count|pluralize }})</small>
+                    {% endif %}
+                </h2>
+                
+                <a href="{% url 'pets:report' %}" class="btn btn-warning">
+                    <i class="bi bi-plus-circle me-2"></i>Report Pet
+                </a>
+            </div>
+            
+            {% if pets %}
+                <div class="row g-4">
+                    {% for pet in pets %}
+                        <div class="col-lg-6 col-xl-4">
+                            <div class="card pet-card h-100">
+                                <div class="position-relative">
+                                    {% if pet.images.first %}
+                                        <img src="{{ pet.images.first.image.url }}" class="card-img-top pet-image" alt="{{ pet.name|default:'Pet' }}">
+                                    {% else %}
+                                        <div class="card-img-top pet-image bg-light d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <span class="badge status-badge 
+                                        {% if pet.status == 'found' %}bg-success
+                                        {% elif pet.status == 'lost' %}bg-danger
+                                        {% elif pet.status == 'reunited' %}bg-info
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ pet.get_status_display }}
+                                    </span>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {{ pet.name|default:"Unnamed Pet" }}
+                                        <small class="text-muted">({{ pet.get_pet_type_display }})</small>
+                                    </h5>
+                                    
+                                    <div class="mb-2">
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-geo-alt me-1"></i>{{ pet.found_location }}
+                                        </small>
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-calendar me-1"></i>{{ pet.found_date }}
+                                        </small>
+                                    </div>
+                                    
+                                    <p class="card-text">
+                                        <strong>Breed:</strong> {{ pet.breed|default:"Unknown" }}<br>
+                                        <strong>Color:</strong> {{ pet.color }}<br>
+                                        <strong>Size:</strong> {{ pet.get_size_display }}
+                                    </p>
+                                    
+                                    {% if pet.description %}
+                                        <p class="card-text text-truncate">
+                                            {{ pet.description|truncatewords:15 }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="card-footer bg-transparent">
+                                    <a href="{% url 'pets:detail' pet.id %}" class="btn btn-primary w-100">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <nav aria-label="Pet search results pagination" class="mt-5">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.pet_type %}&pet_type={{ request.GET.pet_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.size %}&size={{ request.GET.size }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.pet_type %}&pet_type={{ request.GET.pet_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.size %}&size={{ request.GET.size }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.pet_type %}&pet_type={{ request.GET.pet_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.size %}&size={{ request.GET.size }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.pet_type %}&pet_type={{ request.GET.pet_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.size %}&size={{ request.GET.size }}{% endif %}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">No pets found</h4>
+                    <p class="text-muted">Try adjusting your search filters or check back later.</p>
+                    <a href="{% url 'pets:report' %}" class="btn btn-primary">Report a Pet</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
