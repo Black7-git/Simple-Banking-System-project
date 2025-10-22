@@ -1,0 +1,37 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}Update Request - Admin - PetRescue{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="text-align: center; margin-bottom: 2rem;">Update Request</h1>
+    
+    <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem;">
+        <h3>{{ request.subject }}</h3>
+        <p><strong>Submitted by:</strong> {{ request.requester.username }}</p>
+        <p><strong>Type:</strong> {{ request.get_request_type_display }}</p>
+        <p><strong>Date:</strong> {{ request.created_at|date:"F d, Y" }}</p>
+        <p style="margin-top: 1rem;"><strong>Description:</strong></p>
+        <p style="white-space: pre-wrap;">{{ request.description }}</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.status.id_for_label }}">Status *</label>
+            {{ form.status }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.admin_notes.id_for_label }}">Admin Notes *</label>
+            {{ form.admin_notes }}
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Update Request</button>
+            <a href="{% url 'admin_panel' %}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

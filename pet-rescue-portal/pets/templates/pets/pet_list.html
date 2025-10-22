@@ -1,0 +1,82 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}Find Pets - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="text-align: center; margin-bottom: 2rem;">Find Your Lost Pet</h1>
+    
+    <!-- Search Form -->
+    <div class="search-container">
+        <form method="get">
+            <div class="search-filters">
+                <div class="form-group">
+                    {{ form.search_query }}
+                </div>
+                <div class="form-group">
+                    {{ form.pet_type }}
+                </div>
+                <div class="form-group">
+                    {{ form.status }}
+                </div>
+                <div class="form-group">
+                    {{ form.size }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="{% url 'pet_list' %}" class="btn btn-outline">Clear Filters</a>
+        </form>
+    </div>
+    
+    <!-- Results -->
+    <p style="margin-bottom: 1rem;"><strong>{{ page_obj.paginator.count }}</strong> pets found</p>
+    
+    <div class="pet-grid">
+        {% for pet in pets %}
+            <div class="pet-card">
+                {% if pet.photo %}
+                    <img src="{{ pet.photo.url }}" alt="{{ pet.name }}" class="pet-image">
+                {% else %}
+                    <div class="pet-image" style="display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                        🐾
+                    </div>
+                {% endif %}
+                <div class="pet-info">
+                    <span class="pet-status status-{{ pet.status|lower }}">{{ pet.get_status_display }}</span>
+                    <h3>{{ pet.name|default:"Unknown Name" }}</h3>
+                    <div class="pet-details">
+                        <p><strong>Type:</strong> {{ pet.get_pet_type_display }}</p>
+                        {% if pet.breed %}
+                            <p><strong>Breed:</strong> {{ pet.breed }}</p>
+                        {% endif %}
+                        <p><strong>Color:</strong> {{ pet.color }}</p>
+                        <p><strong>Size:</strong> {{ pet.get_size_display }}</p>
+                        <p><strong>Location:</strong> {{ pet.location_found }}</p>
+                        <p><strong>Date:</strong> {{ pet.date_found }}</p>
+                    </div>
+                    <a href="{% url 'pet_detail' pet.pk %}" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">View Details</a>
+                </div>
+            </div>
+        {% empty %}
+            <p style="text-align: center; grid-column: 1/-1;">No pets found matching your criteria.</p>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        
+        <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

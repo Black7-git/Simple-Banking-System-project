@@ -1,0 +1,99 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}Report a Pet - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container" style="max-width: 800px;">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Report a Lost or Found Pet</h1>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <h3>Basic Information</h3>
+            
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">Pet Name</label>
+                {{ form.name }}
+                <small class="form-text">Leave blank if unknown</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.pet_type.id_for_label }}">Pet Type *</label>
+                {{ form.pet_type }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.breed.id_for_label }}">Breed</label>
+                {{ form.breed }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.color.id_for_label }}">Color *</label>
+                {{ form.color }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.size.id_for_label }}">Size *</label>
+                {{ form.size }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.age_approximate.id_for_label }}">Approximate Age</label>
+                {{ form.age_approximate }}
+            </div>
+            
+            <h3 style="margin-top: 2rem;">Physical Characteristics</h3>
+            
+            <div class="form-group">
+                <label for="{{ form.distinctive_marks.id_for_label }}">Distinctive Marks</label>
+                {{ form.distinctive_marks }}
+            </div>
+            
+            <h3 style="margin-top: 2rem;">Status and Location</h3>
+            
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Status *</label>
+                {{ form.status }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.location_found.id_for_label }}">Location *</label>
+                {{ form.location_found }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.date_found.id_for_label }}">Date Found/Lost *</label>
+                {{ form.date_found }}
+            </div>
+            
+            <h3 style="margin-top: 2rem;">Contact Information</h3>
+            
+            <div class="form-group">
+                <label for="{{ form.contact_phone.id_for_label }}">Contact Phone *</label>
+                {{ form.contact_phone }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.contact_email.id_for_label }}">Contact Email *</label>
+                {{ form.contact_email }}
+            </div>
+            
+            <h3 style="margin-top: 2rem;">Photo and Additional Info</h3>
+            
+            <div class="form-group">
+                <label for="{{ form.photo.id_for_label }}">Pet Photo</label>
+                {{ form.photo }}
+                <small class="form-text">Upload a clear photo of the pet</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.additional_info.id_for_label }}">Additional Information</label>
+                {{ form.additional_info }}
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Report</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

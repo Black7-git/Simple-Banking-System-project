@@ -1,0 +1,56 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}Contact Us - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="background: white; padding: 3rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto;">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Contact Us</h1>
+        
+        <section style="margin-bottom: 2rem;">
+            <h2>Get in Touch</h2>
+            <p>We're here to help! If you have any questions, concerns, or need assistance, please don't hesitate to reach out to us.</p>
+        </section>
+        
+        <section style="margin-bottom: 2rem;">
+            <h2>Contact Information</h2>
+            <div style="line-height: 2;">
+                <p><strong>Email:</strong> support@petrescue.com</p>
+                <p><strong>Phone:</strong> (555) 123-4567</p>
+                <p><strong>Emergency Hotline:</strong> (555) 911-PETS</p>
+                <p><strong>Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM</p>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 2rem;">
+            <h2>Frequently Asked Questions</h2>
+            <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 6px; margin-top: 1rem;">
+                <h4>How do I report a lost pet?</h4>
+                <p>Click on "Report Pet" in the navigation menu and fill out the form with as much detail as possible, including a photo.</p>
+            </div>
+            <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 6px; margin-top: 1rem;">
+                <h4>How do I search for my lost pet?</h4>
+                <p>Visit the "Find Pets" page and use the search filters to look for pets matching your pet's description.</p>
+            </div>
+            <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 6px; margin-top: 1rem;">
+                <h4>Is the service free?</h4>
+                <p>Yes! PetRescue is completely free to use. Our mission is to help reunite pets with their families.</p>
+            </div>
+            <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 6px; margin-top: 1rem;">
+                <h4>How do I contact someone who found my pet?</h4>
+                <p>Contact information is displayed on each pet's detail page. You can also submit a request through our platform.</p>
+            </div>
+        </section>
+        
+        <section style="text-align: center;">
+            <h2>Submit a Request</h2>
+            <p>For specific inquiries or assistance, please submit a request through our platform.</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'create_request' %}" class="btn btn-primary" style="margin-top: 1rem;">Submit a Request</a>
+            {% else %}
+                <p><a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a> to submit a request.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

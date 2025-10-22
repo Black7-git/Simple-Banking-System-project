@@ -1,0 +1,60 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}Request Details - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h1>{{ request.subject }}</h1>
+        
+        <div style="margin: 1.5rem 0;">
+            <span class="badge badge-primary">{{ request.get_request_type_display }}</span>
+            {% if request.status == 'PENDING' %}
+                <span class="badge badge-warning">{{ request.get_status_display }}</span>
+            {% elif request.status == 'IN_PROGRESS' %}
+                <span class="badge badge-primary">{{ request.get_status_display }}</span>
+            {% elif request.status == 'RESOLVED' %}
+                <span class="badge badge-success">{{ request.get_status_display }}</span>
+            {% else %}
+                <span class="badge badge-danger">{{ request.get_status_display }}</span>
+            {% endif %}
+        </div>
+        
+        <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem; margin-bottom: 1rem;">
+            <p><strong>Submitted by:</strong> {{ request.requester.username }}</p>
+            <p><strong>Date:</strong> {{ request.created_at|date:"F d, Y g:i A" }}</p>
+            {% if request.pet %}
+                <p><strong>Related Pet:</strong> <a href="{% url 'pet_detail' request.pet.pk %}">{{ request.pet.name|default:"View Pet" }}</a></p>
+            {% endif %}
+        </div>
+        
+        <div style="margin: 2rem 0;">
+            <h3>Description</h3>
+            <p style="white-space: pre-wrap;">{{ request.description }}</p>
+        </div>
+        
+        {% if request.admin_notes %}
+        <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 6px; margin: 2rem 0;">
+            <h3>Admin Response</h3>
+            <p style="white-space: pre-wrap;">{{ request.admin_notes }}</p>
+            {% if request.resolved_by %}
+                <p style="margin-top: 1rem;"><small>Resolved by: {{ request.resolved_by.username }}</small></p>
+            {% endif %}
+            {% if request.resolved_at %}
+                <p><small>Resolved on: {{ request.resolved_at|date:"F d, Y g:i A" }}</small></p>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if user.profile.is_admin %}
+        <div style="margin-top: 2rem;">
+            <a href="{% url 'admin_update_request' request.pk %}" class="btn btn-primary">Update Request</a>
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 2rem;">
+            <a href="{% url 'request_list' %}" class="btn btn-outline">Back to Requests</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
