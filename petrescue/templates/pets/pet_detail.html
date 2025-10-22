@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ pet.name|default:"Pet Details" }} - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Pet Information -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="card-title mb-0">
+                            {{ pet.name|default:"Unnamed Pet" }}
+                            <span class="badge 
+                                {% if pet.status == 'found' %}bg-success
+                                {% elif pet.status == 'lost' %}bg-danger
+                                {% elif pet.status == 'reunited' %}bg-info
+                                {% else %}bg-secondary{% endif %} ms-2">
+                                {{ pet.get_status_display }}
+                            </span>
+                        </h1>
+                        
+                        {% if user.is_authenticated and user == pet.reported_by %}
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Pet Images -->
+                    {% if pet.images.all %}
+                        <div class="mb-4">
+                            {% if pet.images.count == 1 %}
+                                <img src="{{ pet.images.first.image.url }}" class="img-fluid rounded" alt="{{ pet.name|default:'Pet' }}" style="max-height: 400px; width: 100%; object-fit: cover;">
+                            {% else %}
+                                <div id="petCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        {% for image in pet.images.all %}
+                                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                <img src="{{ image.image.url }}" class="d-block w-100 rounded" alt="{{ image.caption|default:'Pet image' }}" style="height: 400px; object-fit: cover;">
+                                                {% if image.caption %}
+                                                    <div class="carousel-caption d-none d-md-block">
+                                                        <p class="bg-dark bg-opacity-75 rounded px-3 py-1">{{ image.caption }}</p>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#petCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#petCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon"></span>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Pet Details -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Basic Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Type:</strong></td>
+                                    <td>{{ pet.get_pet_type_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Breed:</strong></td>
+                                    <td>{{ pet.breed|default:"Unknown" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Color:</strong></td>
+                                    <td>{{ pet.color }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Size:</strong></td>
+                                    <td>{{ pet.get_size_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gender:</strong></td>
+                                    <td>{{ pet.get_gender_display }}</td>
+                                </tr>
+                                {% if pet.age_estimate %}
+                                <tr>
+                                    <td><strong>Age:</strong></td>
+                                    <td>{{ pet.age_estimate }}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>Location & Date</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>{{ pet.get_status_display }} Location:</strong></td>
+                                    <td>{{ pet.found_location }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Date {{ pet.get_status_display }}:</strong></td>
+                                    <td>{{ pet.found_date }}</td>
+                                </tr>
+                                {% if pet.current_location %}
+                                <tr>
+                                    <td><strong>Current Location:</strong></td>
+                                    <td>{{ pet.current_location }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td><strong>Reported:</strong></td>
+                                    <td>{{ pet.created_at|date:"M d, Y" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    {% if pet.description %}
+                        <div class="mt-4">
+                            <h5>Description</h5>
+                            <p class="text-muted">{{ pet.description|linebreaks }}</p>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Distinctive Features -->
+                    {% if pet.distinctive_features %}
+                        <div class="mt-4">
+                            <h5>Distinctive Features</h5>
+                            <p class="text-muted">{{ pet.distinctive_features|linebreaks }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact & Actions Sidebar -->
+        <div class="col-lg-4">
+            <!-- Contact Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Reported by:</strong> {{ pet.reported_by.get_full_name|default:pet.reported_by.username }}</p>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="contact-info">
+                            <p class="mb-2">
+                                <i class="bi bi-telephone me-2"></i>
+                                <a href="tel:{{ pet.contact_phone }}">{{ pet.contact_phone }}</a>
+                            </p>
+                            <p class="mb-0">
+                                <i class="bi bi-envelope me-2"></i>
+                                <a href="mailto:{{ pet.contact_email }}">{{ pet.contact_email }}</a>
+                            </p>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <a href="{% url 'accounts:login' %}">Login</a> to view contact information.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            {% if user.is_authenticated and user != pet.reported_by %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Contact Owner/Finder</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ request_form.request_type.label_tag }}
+                                {{ request_form.request_type }}
+                            </div>
+                            <div class="mb-3">
+                                {{ request_form.message.label_tag }}
+                                {{ request_form.message }}
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-send me-2"></i>Send Request
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Share Options -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-share me-2"></i>Share This Pet</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Help spread the word about this pet!</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard()">
+                            <i class="bi bi-link-45deg me-2"></i>Copy Link
+                        </button>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                           target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-facebook me-2"></i>Share on Facebook
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?text=Help find this {{ pet.get_status_display|lower }} {{ pet.get_pet_type_display|lower }}!&url={{ request.build_absolute_uri }}" 
+                           target="_blank" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-twitter me-2"></i>Share on Twitter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        alert('Link copied to clipboard!');
+    });
+}
+</script>
+{% endblock %}
