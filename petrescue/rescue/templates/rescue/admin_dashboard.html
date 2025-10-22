@@ -1,0 +1,238 @@
+{% extends 'rescue/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h1>
+            
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">{{ stats.total_pets }}</h4>
+                                    <p class="mb-0">Total Pets</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-paw fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">{{ stats.pending_verification }}</h4>
+                                    <p class="mb-0">Pending Verification</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">{{ stats.pending_requests }}</h4>
+                                    <p class="mb-0">Pending Requests</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-hand-holding-heart fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">{{ stats.total_pets|add:stats.pending_verification|add:stats.pending_requests }}</h4>
+                                    <p class="mb-0">Total Activity</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-chart-line fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Recent Pets -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-paw me-2"></i>Recent Pet Reports</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if stats.recent_pets %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Pet</th>
+                                                <th>Type</th>
+                                                <th>Status</th>
+                                                <th>Date</th>
+                                                <th>Verified</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for pet in stats.recent_pets %}
+                                                <tr>
+                                                    <td>
+                                                        <a href="{% url 'pet_detail' pet.id %}" class="text-decoration-none">
+                                                            {% if pet.name %}{{ pet.name }}{% else %}Unknown{% endif %}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ pet.get_pet_type_display }}</td>
+                                                    <td>
+                                                        <span class="badge bg-{% if pet.status == 'reunited' %}success{% elif pet.status == 'adopted' %}info{% else %}primary{% endif %}">
+                                                            {{ pet.get_status_display }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ pet.date_found|date:"M d" }}</td>
+                                                    <td>
+                                                        {% if pet.is_verified %}
+                                                            <i class="fas fa-check-circle text-success"></i>
+                                                        {% else %}
+                                                            <i class="fas fa-clock text-warning"></i>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center">
+                                    <a href="{% url 'admin:rescue_pet_changelist' %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-list me-1"></i>View All Pets
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-3">
+                                    <i class="fas fa-paw fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted mb-0">No pet reports yet</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Requests -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-hand-holding-heart me-2"></i>Recent Requests</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if stats.recent_requests %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Requester</th>
+                                                <th>Type</th>
+                                                <th>Pet</th>
+                                                <th>Status</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for request in stats.recent_requests %}
+                                                <tr>
+                                                    <td>{{ request.requester_name }}</td>
+                                                    <td>
+                                                        <span class="badge bg-{% if request.request_type == 'claim' %}warning{% elif request.request_type == 'adopt' %}success{% else %}info{% endif %}">
+                                                            {{ request.get_request_type_display }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <a href="{% url 'pet_detail' request.pet.id %}" class="text-decoration-none">
+                                                            {% if request.pet.name %}{{ request.pet.name }}{% else %}Unknown{% endif %}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-{% if request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% elif request.status == 'completed' %}info{% else %}warning{% endif %}">
+                                                            {{ request.get_status_display }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ request.created_at|date:"M d" }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center">
+                                    <a href="{% url 'manage_requests' %}" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-cog me-1"></i>Manage Requests
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-3">
+                                    <i class="fas fa-hand-holding-heart fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted mb-0">No requests yet</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-2">
+                                    <a href="{% url 'admin:rescue_pet_add' %}" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-plus me-1"></i>Add Pet
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <a href="{% url 'manage_requests' %}" class="btn btn-outline-info w-100">
+                                        <i class="fas fa-cog me-1"></i>Manage Requests
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <a href="{% url 'admin:rescue_pet_changelist' %}?is_verified__exact=0" class="btn btn-outline-warning w-100">
+                                        <i class="fas fa-check-circle me-1"></i>Verify Pets
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary w-100">
+                                        <i class="fas fa-cogs me-1"></i>Admin Panel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

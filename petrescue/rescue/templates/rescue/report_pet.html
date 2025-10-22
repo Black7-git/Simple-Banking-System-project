@@ -1,0 +1,174 @@
+{% extends 'rescue/base.html' %}
+{% load static %}
+
+{% block title %}Report Found Pet - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0"><i class="fas fa-plus me-2"></i>Report Found Pet</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Help reunite a lost pet with its family by providing as much information as possible. 
+                        All information will be verified before being published.
+                    </p>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                                        Pet Name <span class="text-muted">(if known)</span>
+                                    </label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger">{{ form.name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.pet_type.id_for_label }}" class="form-label">Pet Type *</label>
+                                    {{ form.pet_type }}
+                                    {% if form.pet_type.errors %}
+                                        <div class="text-danger">{{ form.pet_type.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.breed.id_for_label }}" class="form-label">Breed</label>
+                                    {{ form.breed }}
+                                    {% if form.breed.errors %}
+                                        <div class="text-danger">{{ form.breed.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.color.id_for_label }}" class="form-label">Color</label>
+                                    {{ form.color }}
+                                    {% if form.color.errors %}
+                                        <div class="text-danger">{{ form.color.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.gender.id_for_label }}" class="form-label">Gender</label>
+                                    {{ form.gender }}
+                                    {% if form.gender.errors %}
+                                        <div class="text-danger">{{ form.gender.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.age.id_for_label }}" class="form-label">Age (years)</label>
+                                    {{ form.age }}
+                                    {% if form.age.errors %}
+                                        <div class="text-danger">{{ form.age.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.size.id_for_label }}" class="form-label">Size</label>
+                                    {{ form.size }}
+                                    {% if form.size.errors %}
+                                        <div class="text-danger">{{ form.size.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.location_found.id_for_label }}" class="form-label">Location Found *</label>
+                            {{ form.location_found }}
+                            <div class="form-text">Please provide the specific location where you found this pet.</div>
+                            {% if form.location_found.errors %}
+                                <div class="text-danger">{{ form.location_found.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            {{ form.description }}
+                            <div class="form-text">Please provide any additional details about the pet's appearance, behavior, or condition.</div>
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">Pet Photo</label>
+                            {{ form.image }}
+                            <div class="form-text">Upload a clear photo of the pet to help with identification.</div>
+                            {% if form.image.errors %}
+                                <div class="text-danger">{{ form.image.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <hr>
+                        <h5 class="mb-3">Your Contact Information</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.finder_name.id_for_label }}" class="form-label">Your Name *</label>
+                                    {{ form.finder_name }}
+                                    {% if form.finder_name.errors %}
+                                        <div class="text-danger">{{ form.finder_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.finder_phone.id_for_label }}" class="form-label">Phone Number *</label>
+                                    {{ form.finder_phone }}
+                                    {% if form.finder_phone.errors %}
+                                        <div class="text-danger">{{ form.finder_phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.finder_email.id_for_label }}" class="form-label">Email Address *</label>
+                            {{ form.finder_email }}
+                            {% if form.finder_email.errors %}
+                                <div class="text-danger">{{ form.finder_email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Important:</strong> By submitting this form, you agree to be contacted by potential pet owners. 
+                            All information will be verified before being published on our platform.
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'home' %}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i>Submit Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
