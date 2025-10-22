@@ -1,0 +1,103 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}Admin Panel - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="margin-bottom: 2rem;">Admin Dashboard</h1>
+    
+    <!-- Statistics -->
+    <div class="stats">
+        <div class="stat-card">
+            <h3>{{ total_users }}</h3>
+            <p>Total Users</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_pets }}</h3>
+            <p>Total Pets</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ pending_requests }}</h3>
+            <p>Pending Requests</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ unverified_pets }}</h3>
+            <p>Unverified Pets</p>
+        </div>
+    </div>
+    
+    <div class="admin-dashboard">
+        <!-- Pending Requests -->
+        <div class="admin-card">
+            <h2>Pending Requests</h2>
+            {% if recent_requests %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Type</th>
+                            <th>Requester</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in recent_requests %}
+                        <tr>
+                            <td>{{ request.subject }}</td>
+                            <td>{{ request.get_request_type_display }}</td>
+                            <td>{{ request.requester.username }}</td>
+                            <td>{{ request.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'request_detail' request.pk %}" class="btn btn-primary" style="padding: 0.25rem 0.75rem;">View</a>
+                                <a href="{% url 'admin_update_request' request.pk %}" class="btn btn-secondary" style="padding: 0.25rem 0.75rem;">Update</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'request_list' %}" class="btn btn-primary" style="margin-top: 1rem;">View All Requests</a>
+            {% else %}
+                <p>No pending requests.</p>
+            {% endif %}
+        </div>
+        
+        <!-- Unverified Pets -->
+        <div class="admin-card">
+            <h2>Unverified Pet Reports</h2>
+            {% if recent_pets %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Reported By</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pet in recent_pets %}
+                        <tr>
+                            <td>{{ pet.name|default:"Unnamed" }}</td>
+                            <td>{{ pet.get_pet_type_display }}</td>
+                            <td><span class="pet-status status-{{ pet.status|lower }}">{{ pet.get_status_display }}</span></td>
+                            <td>{{ pet.reported_by.username }}</td>
+                            <td>{{ pet.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'pet_detail' pet.pk %}" class="btn btn-primary" style="padding: 0.25rem 0.75rem;">View</a>
+                                <a href="{% url 'admin_verify_pet' pet.pk %}" class="btn btn-secondary" style="padding: 0.25rem 0.75rem;">Verify</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'pet_list' %}" class="btn btn-primary" style="margin-top: 1rem;">View All Pets</a>
+            {% else %}
+                <p>No unverified pets.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

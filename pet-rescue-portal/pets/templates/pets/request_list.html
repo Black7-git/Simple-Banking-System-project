@@ -1,0 +1,76 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}Requests - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>{% if user.profile.is_admin %}All Requests{% else %}My Requests{% endif %}</h1>
+        <a href="{% url 'create_request' %}" class="btn btn-primary">Create New Request</a>
+    </div>
+    
+    <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        {% if requests %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        {% if user.profile.is_admin %}
+                            <th>Requester</th>
+                        {% endif %}
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                    <tr>
+                        <td>{{ request.subject }}</td>
+                        <td>{{ request.get_request_type_display }}</td>
+                        <td>
+                            {% if request.status == 'PENDING' %}
+                                <span class="badge badge-warning">{{ request.get_status_display }}</span>
+                            {% elif request.status == 'IN_PROGRESS' %}
+                                <span class="badge badge-primary">{{ request.get_status_display }}</span>
+                            {% elif request.status == 'RESOLVED' %}
+                                <span class="badge badge-success">{{ request.get_status_display }}</span>
+                            {% else %}
+                                <span class="badge badge-danger">{{ request.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        {% if user.profile.is_admin %}
+                            <td>{{ request.requester.username }}</td>
+                        {% endif %}
+                        <td>{{ request.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{% url 'request_detail' request.pk %}" class="btn btn-primary" style="padding: 0.25rem 0.75rem;">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+                
+                <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        {% else %}
+            <p>No requests found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

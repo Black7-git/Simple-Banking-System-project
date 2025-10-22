@@ -1,0 +1,117 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}{{ pet.name|default:"Pet Details" }} - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="detail-container">
+        <!-- Pet Image -->
+        <div>
+            {% if pet.photo %}
+                <img src="{{ pet.photo.url }}" alt="{{ pet.name }}" class="detail-image">
+            {% else %}
+                <div class="detail-image" style="display: flex; align-items: center; justify-content: center; font-size: 5rem; background-color: #f3f4f6;">
+                    🐾
+                </div>
+            {% endif %}
+            
+            <!-- Actions -->
+            {% if user.is_authenticated %}
+                {% if pet.reported_by == user or user.profile.is_admin %}
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <a href="{% url 'edit_pet' pet.pk %}" class="btn btn-primary" style="flex: 1;">Edit</a>
+                        <a href="{% url 'delete_pet' pet.pk %}" class="btn btn-danger" style="flex: 1;">Delete</a>
+                    </div>
+                {% endif %}
+                {% if user.profile.is_admin and not pet.is_verified %}
+                    <a href="{% url 'admin_verify_pet' pet.pk %}" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;">Verify Report</a>
+                {% endif %}
+            {% endif %}
+        </div>
+        
+        <!-- Pet Information -->
+        <div class="detail-info">
+            <h1>{{ pet.name|default:"Unknown Name" }}</h1>
+            <span class="pet-status status-{{ pet.status|lower }}">{{ pet.get_status_display }}</span>
+            {% if pet.is_verified %}
+                <span class="badge badge-success">Verified</span>
+            {% endif %}
+            
+            <div class="detail-section">
+                <h3>Basic Information</h3>
+                <p><strong>Type:</strong> {{ pet.get_pet_type_display }}</p>
+                {% if pet.breed %}
+                    <p><strong>Breed:</strong> {{ pet.breed }}</p>
+                {% endif %}
+                <p><strong>Color:</strong> {{ pet.color }}</p>
+                <p><strong>Size:</strong> {{ pet.get_size_display }}</p>
+                {% if pet.age_approximate %}
+                    <p><strong>Age:</strong> {{ pet.age_approximate }}</p>
+                {% endif %}
+            </div>
+            
+            {% if pet.distinctive_marks %}
+            <div class="detail-section">
+                <h3>Distinctive Marks</h3>
+                <p>{{ pet.distinctive_marks }}</p>
+            </div>
+            {% endif %}
+            
+            <div class="detail-section">
+                <h3>Location and Date</h3>
+                <p><strong>Location:</strong> {{ pet.location_found }}</p>
+                <p><strong>Date:</strong> {{ pet.date_found }}</p>
+            </div>
+            
+            <div class="detail-section">
+                <h3>Contact Information</h3>
+                <p><strong>Phone:</strong> {{ pet.contact_phone }}</p>
+                <p><strong>Email:</strong> {{ pet.contact_email }}</p>
+                <p><strong>Reported by:</strong> {{ pet.reported_by.username }}</p>
+            </div>
+            
+            {% if pet.additional_info %}
+            <div class="detail-section">
+                <h3>Additional Information</h3>
+                <p>{{ pet.additional_info }}</p>
+            </div>
+            {% endif %}
+            
+            <div class="detail-section">
+                <p><small>Reported on: {{ pet.created_at|date:"F d, Y" }}</small></p>
+                <p><small>Last updated: {{ pet.updated_at|date:"F d, Y" }}</small></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <h2>Comments and Additional Information</h2>
+        
+        {% if comments %}
+            {% for comment in comments %}
+                <div class="comment">
+                    <div class="comment-author">{{ comment.user.username }}</div>
+                    <p>{{ comment.content }}</p>
+                    <div class="comment-date">{{ comment.created_at|date:"F d, Y g:i A" }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No comments yet.</p>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            <h3 style="margin-top: 2rem;">Add a Comment</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ comment_form.content }}
+                </div>
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+            </form>
+        {% else %}
+            <p style="margin-top: 2rem;"><a href="{% url 'login' %}">Login</a> to add a comment.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

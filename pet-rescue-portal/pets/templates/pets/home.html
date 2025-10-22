@@ -1,0 +1,124 @@
+{% extends 'pets/base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <h1>Welcome to PetRescue</h1>
+    <p>Helping reunite lost pets with their families since 2024</p>
+    <div class="hero-buttons">
+        <a href="{% url 'pet_list' %}" class="btn btn-primary">Search for Your Pet</a>
+        <a href="{% url 'report_pet' %}" class="btn btn-secondary">Report a Found Pet</a>
+    </div>
+</section>
+
+<!-- Statistics -->
+<div class="container">
+    <div class="stats">
+        <div class="stat-card">
+            <h3>{{ total_pets }}</h3>
+            <p>Total Pets Reported</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ lost_pets }}</h3>
+            <p>Lost Pets</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ found_pets }}</h3>
+            <p>Found Pets</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ reunited_pets }}</h3>
+            <p>Happy Reunions</p>
+        </div>
+    </div>
+
+    <!-- Recent Lost Pets -->
+    <section>
+        <h2 style="text-align: center; margin: 3rem 0 2rem;">Recently Reported Lost Pets</h2>
+        <div class="pet-grid">
+            {% for pet in recent_lost_pets %}
+                <div class="pet-card">
+                    {% if pet.photo %}
+                        <img src="{{ pet.photo.url }}" alt="{{ pet.name }}" class="pet-image">
+                    {% else %}
+                        <div class="pet-image" style="display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                            🐾
+                        </div>
+                    {% endif %}
+                    <div class="pet-info">
+                        <span class="pet-status status-{{ pet.status|lower }}">{{ pet.get_status_display }}</span>
+                        <h3>{{ pet.name|default:"Unknown Name" }}</h3>
+                        <div class="pet-details">
+                            <p><strong>Type:</strong> {{ pet.get_pet_type_display }}</p>
+                            <p><strong>Color:</strong> {{ pet.color }}</p>
+                            <p><strong>Location:</strong> {{ pet.location_found }}</p>
+                            <p><strong>Date:</strong> {{ pet.date_found }}</p>
+                        </div>
+                        <a href="{% url 'pet_detail' pet.pk %}" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">View Details</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="text-align: center; grid-column: 1/-1;">No lost pets reported recently.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Recent Found Pets -->
+    <section>
+        <h2 style="text-align: center; margin: 3rem 0 2rem;">Recently Found Pets</h2>
+        <div class="pet-grid">
+            {% for pet in recent_found_pets %}
+                <div class="pet-card">
+                    {% if pet.photo %}
+                        <img src="{{ pet.photo.url }}" alt="{{ pet.name }}" class="pet-image">
+                    {% else %}
+                        <div class="pet-image" style="display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                            🐾
+                        </div>
+                    {% endif %}
+                    <div class="pet-info">
+                        <span class="pet-status status-{{ pet.status|lower }}">{{ pet.get_status_display }}</span>
+                        <h3>{{ pet.name|default:"Unknown Name" }}</h3>
+                        <div class="pet-details">
+                            <p><strong>Type:</strong> {{ pet.get_pet_type_display }}</p>
+                            <p><strong>Color:</strong> {{ pet.color }}</p>
+                            <p><strong>Location:</strong> {{ pet.location_found }}</p>
+                            <p><strong>Date:</strong> {{ pet.date_found }}</p>
+                        </div>
+                        <a href="{% url 'pet_detail' pet.pk %}" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">View Details</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="text-align: center; grid-column: 1/-1;">No found pets reported recently.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section style="margin: 4rem 0; text-align: center;">
+        <h2>How It Works</h2>
+        <div class="stats">
+            <div class="stat-card">
+                <h3 style="font-size: 3rem;">📸</h3>
+                <h4>Report</h4>
+                <p>Report a lost or found pet with details and photos</p>
+            </div>
+            <div class="stat-card">
+                <h3 style="font-size: 3rem;">🔍</h3>
+                <h4>Search</h4>
+                <p>Search our database to find your lost pet</p>
+            </div>
+            <div class="stat-card">
+                <h3 style="font-size: 3rem;">🤝</h3>
+                <h4>Connect</h4>
+                <p>Connect with finders or owners to reunite pets</p>
+            </div>
+            <div class="stat-card">
+                <h3 style="font-size: 3rem;">❤️</h3>
+                <h4>Reunite</h4>
+                <p>Celebrate happy reunions with loved pets</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

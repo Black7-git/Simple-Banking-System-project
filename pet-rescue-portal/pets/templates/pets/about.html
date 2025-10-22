@@ -1,0 +1,50 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}About - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="background: white; padding: 3rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto;">
+        <h1 style="text-align: center; margin-bottom: 2rem;">About PetRescue</h1>
+        
+        <section style="margin-bottom: 2rem;">
+            <h2>Our Mission</h2>
+            <p>PetRescue is dedicated to reuniting lost pets with their families and facilitating pet adoption. We bridge the gap between individuals who find lost pets and their owners through an intuitive, easy-to-use platform.</p>
+        </section>
+        
+        <section style="margin-bottom: 2rem;">
+            <h2>What We Offer</h2>
+            <ul style="line-height: 2;">
+                <li><strong>Pet Reporting:</strong> Easy-to-use forms for reporting lost or found pets</li>
+                <li><strong>Search Database:</strong> Comprehensive search functionality to find your lost pet</li>
+                <li><strong>Admin Management:</strong> Professional team to verify reports and manage requests</li>
+                <li><strong>Notifications:</strong> Stay updated on potential matches and request updates</li>
+                <li><strong>Community:</strong> Connect with others to help reunite pets with their families</li>
+            </ul>
+        </section>
+        
+        <section style="margin-bottom: 2rem;">
+            <h2>Technology</h2>
+            <p>PetRescue is built using modern web technologies:</p>
+            <ul style="line-height: 2;">
+                <li>Django (Python Web Framework)</li>
+                <li>MySQL Database</li>
+                <li>HTML5, CSS3 for responsive design</li>
+                <li>Secure user authentication and data management</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>Get Involved</h2>
+            <p>Whether you've found a lost pet, lost your own pet, or want to help others in your community, PetRescue is here to help. Join our community today and make a difference!</p>
+            <div style="text-align: center; margin-top: 2rem;">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+                {% else %}
+                    <a href="{% url 'report_pet' %}" class="btn btn-primary">Report a Pet</a>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

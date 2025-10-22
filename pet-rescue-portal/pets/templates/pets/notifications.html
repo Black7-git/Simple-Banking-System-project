@@ -1,0 +1,45 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}Notifications - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Notifications</h1>
+        {% if notifications %}
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Mark All as Read</button>
+            </form>
+        {% endif %}
+    </div>
+    
+    <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div style="padding: 1.5rem; border-left: 3px solid {% if notification.is_read %}#d1d5db{% else %}#2563eb{% endif %}; background-color: {% if notification.is_read %}#f9fafb{% else %}#dbeafe{% endif %}; border-radius: 6px; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <h3 style="margin-bottom: 0.5rem;">{{ notification.title }}</h3>
+                            <p style="margin-bottom: 0.5rem;">{{ notification.message }}</p>
+                            <small style="color: #666;">{{ notification.created_at|date:"F d, Y g:i A" }}</small>
+                        </div>
+                        {% if not notification.is_read %}
+                            <span class="badge badge-primary">New</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if notification.related_pet %}
+                        <a href="{% url 'pet_detail' notification.related_pet.pk %}" class="btn btn-primary" style="margin-top: 1rem; padding: 0.25rem 0.75rem;">View Pet</a>
+                    {% endif %}
+                    {% if notification.related_request %}
+                        <a href="{% url 'request_detail' notification.related_request.pk %}" class="btn btn-primary" style="margin-top: 1rem; padding: 0.25rem 0.75rem;">View Request</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No notifications.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

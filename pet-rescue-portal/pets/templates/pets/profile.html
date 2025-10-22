@@ -1,0 +1,110 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}My Profile - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>My Profile</h1>
+    
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-top: 2rem;">
+        <!-- Profile Information -->
+        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h2>Profile Information</h2>
+            
+            <div style="margin: 1.5rem 0;">
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                {% if user.profile.is_admin %}
+                    <span class="badge badge-success">Admin</span>
+                {% endif %}
+            </div>
+            
+            <h3>Update Profile</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ profile_form.phone.id_for_label }}">Phone</label>
+                    {{ profile_form.phone }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ profile_form.address.id_for_label }}">Address</label>
+                    {{ profile_form.address }}
+                </div>
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+        </div>
+        
+        <!-- User's Pets and Requests -->
+        <div>
+            <!-- My Pets -->
+            <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                <h2>My Pet Reports</h2>
+                {% if user_pets %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pet in user_pets %}
+                            <tr>
+                                <td>{{ pet.name|default:"Unnamed" }}</td>
+                                <td>{{ pet.get_pet_type_display }}</td>
+                                <td><span class="pet-status status-{{ pet.status|lower }}">{{ pet.get_status_display }}</span></td>
+                                <td>{{ pet.date_found }}</td>
+                                <td>
+                                    <a href="{% url 'pet_detail' pet.pk %}" class="btn btn-primary" style="padding: 0.25rem 0.75rem;">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>You haven't reported any pets yet.</p>
+                    <a href="{% url 'report_pet' %}" class="btn btn-primary">Report a Pet</a>
+                {% endif %}
+            </div>
+            
+            <!-- My Requests -->
+            <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h2>My Requests</h2>
+                {% if user_requests %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in user_requests %}
+                            <tr>
+                                <td>{{ request.subject }}</td>
+                                <td>{{ request.get_request_type_display }}</td>
+                                <td><span class="badge badge-primary">{{ request.get_status_display }}</span></td>
+                                <td>{{ request.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'request_detail' request.pk %}" class="btn btn-primary" style="padding: 0.25rem 0.75rem;">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>You haven't submitted any requests yet.</p>
+                    <a href="{% url 'create_request' %}" class="btn btn-primary">Create a Request</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
