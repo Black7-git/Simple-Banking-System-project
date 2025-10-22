@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Submit Claim - PetRescue{% endblock %}
+{% block content %}
+<h1 class="h3">Submit a Claim</h1>
+<form method="post" enctype="multipart/form-data" class="mt-3">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn btn-primary" type="submit">Send Claim</button>
+</form>
+{% endblock %}
