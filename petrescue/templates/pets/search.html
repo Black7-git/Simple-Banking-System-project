@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Search - PetRescue{% endblock %}
+{% block content %}
+<h1 class="h3">Search Found Pets</h1>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-sm-4"><input name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Keyword"></div>
+  <div class="col-sm-2">
+    <select name="species" class="form-select">
+      <option value="" {% if not request.GET.species %}selected{% endif %}>Any species</option>
+      <option value="dog" {% if request.GET.species == 'dog' %}selected{% endif %}>Dog</option>
+      <option value="cat" {% if request.GET.species == 'cat' %}selected{% endif %}>Cat</option>
+      <option value="bird" {% if request.GET.species == 'bird' %}selected{% endif %}>Bird</option>
+      <option value="other" {% if request.GET.species == 'other' %}selected{% endif %}>Other</option>
+    </select>
+  </div>
+  <div class="col-sm-2"><input name="color" value="{{ request.GET.color }}" class="form-control" placeholder="Color"></div>
+  <div class="col-sm-3"><input name="location" value="{{ request.GET.location }}" class="form-control" placeholder="Location"></div>
+  <div class="col-sm-1 d-grid"><button class="btn btn-outline-secondary" type="submit">Search</button></div>
+</form>
+{% if results %}
+  <ul class="list-group">
+    {% for r in results %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ r.get_species_display }} • {{ r.color|default:'—' }} • {{ r.location_found }} • {{ r.date_found }}</span>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'pets:report_detail' r.pk %}">View</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="alert alert-info">No matching pets found.</div>
+{% endif %}
+{% endblock %}

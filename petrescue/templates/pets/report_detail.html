@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Pet Details - PetRescue{% endblock %}
+{% block content %}
+<h1 class="h3">Pet Details</h1>
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card">
+      {% if report.photo %}
+        <img src="{{ report.photo.url }}" class="card-img-top" alt="Pet photo">
+      {% endif %}
+      <div class="card-body">
+        <p><strong>Name:</strong> {{ report.pet_name|default:'—' }}</p>
+        <p><strong>Species:</strong> {{ report.get_species_display }}</p>
+        <p><strong>Breed:</strong> {{ report.breed|default:'—' }}</p>
+        <p><strong>Color:</strong> {{ report.color|default:'—' }}</p>
+        <p><strong>Location Found:</strong> {{ report.location_found }}</p>
+        <p><strong>Date Found:</strong> {{ report.date_found }}</p>
+        <p><strong>Description:</strong> {{ report.description|default:'—' }}</p>
+        <p><strong>Contact:</strong> {{ report.contact_name }} {{ report.contact_email }} {{ report.contact_phone }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h5">Think this is yours?</h2>
+        <a href="{% url 'pets:claim_create' report.pk %}" class="btn btn-primary">Submit a Claim</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
