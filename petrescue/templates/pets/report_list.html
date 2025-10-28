@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Found Pets - PetRescue{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3">Found Pets</h1>
+  <a class="btn btn-primary" href="{% url 'pets:report_create' %}">Report Found Pet</a>
+</div>
+<form class="row g-2 mb-3" method="get" action="{% url 'pets:search' %}">
+  <div class="col-sm-4"><input name="q" class="form-control" placeholder="Keyword (name, breed, description)"></div>
+  <div class="col-sm-2">
+    <select name="species" class="form-select">
+      <option value="">Any species</option>
+      <option value="dog">Dog</option>
+      <option value="cat">Cat</option>
+      <option value="bird">Bird</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+  <div class="col-sm-2"><input name="color" class="form-control" placeholder="Color"></div>
+  <div class="col-sm-3"><input name="location" class="form-control" placeholder="Location"></div>
+  <div class="col-sm-1 d-grid"><button class="btn btn-outline-secondary" type="submit">Search</button></div>
+</form>
+{% if reports %}
+  <div class="row row-cols-1 row-cols-md-2 g-3">
+    {% for r in reports %}
+    <div class="col">
+      <div class="card h-100">
+        {% if r.photo %}
+          <img src="{{ r.photo.url }}" class="card-img-top" alt="Photo of {{ r.pet_name|default:r.species }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ r.pet_name|default:r.get_species_display }}</h5>
+          <p class="card-text small mb-1"><strong>Color:</strong> {{ r.color|default:'—' }}</p>
+          <p class="card-text small mb-1"><strong>Location:</strong> {{ r.location_found }}</p>
+          <p class="card-text small"><strong>Date Found:</strong> {{ r.date_found }}</p>
+          <a href="{% url 'pets:report_detail' r.pk %}" class="btn btn-sm btn-outline-primary">Details</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-info">No reports yet.</div>
+{% endif %}
+{% endblock %}

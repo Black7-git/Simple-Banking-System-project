@@ -1,0 +1,12 @@
+Django>=5.1,<6
+PyMySQL
+django-environ
+django-crispy-forms
+crispy-bootstrap5
+Pillow
+pytest
+pytest-django
+coverage
+black
+isort
+flake8
