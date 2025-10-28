@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Recent Reports</h2>
+<div class="reports">
+  {% for r in recent_reports %}
+  <article>
+    <h3><a href="{% url 'pets:report_detail' r.reference_code %}">{{ r.get_report_type_display }} {{ r.get_species_display }}</a></h3>
+    <p><strong>When:</strong> {{ r.date_seen }} | <strong>Where:</strong> {{ r.location }}</p>
+    {% if r.photo %}
+      <img src="{{ r.photo.url }}" alt="Pet photo" style="max-width:200px" />
+    {% endif %}
+    <p>Status: {{ r.get_status_display }}</p>
+  </article>
+  {% empty %}
+  <p>No reports yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Report {{ report.reference_code }}</h2>
+<p><strong>Type:</strong> {{ report.get_report_type_display }} | <strong>Status:</strong> {{ report.get_status_display }}</p>
+<p><strong>Species:</strong> {{ report.get_species_display }} | <strong>Breed:</strong> {{ report.breed }}</p>
+<p><strong>Color:</strong> {{ report.color }}</p>
+<p><strong>Distinctive marks:</strong> {{ report.distinctive_marks }}</p>
+<p><strong>Date:</strong> {{ report.date_seen }} | <strong>Location:</strong> {{ report.location }}</p>
+<p>{{ report.description }}</p>
+{% if report.photo %}
+  <img src="{{ report.photo.url }}" alt="Pet photo" style="max-width:400px" />
+{% endif %}
+{% endblock %}
