@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Profile Picture">
+                    {% else %}
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 120px; height: 120px;">
+                            <i class="bi bi-person" style="font-size: 3rem;"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <h4>{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted">{{ user.get_user_type_display }}</p>
+                    
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">
+                        <i class="bi bi-pencil me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Username:</strong></td>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Email:</strong></td>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Phone:</strong></td>
+                            <td>{{ user.phone_number|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Address:</strong></td>
+                            <td>{{ user.address|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Member Since:</strong></td>
+                            <td>{{ user.date_joined|date:"F d, Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Account Status:</strong></td>
+                            <td>
+                                {% if user.is_verified %}
+                                    <span class="badge bg-success">Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Unverified</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-file-earmark-text text-primary" style="font-size: 2rem;"></i>
+                            <h5 class="mt-2">My Reports</h5>
+                            <p class="text-muted">View pets you've reported</p>
+                            <a href="{% url 'pets:my_reports' %}" class="btn btn-outline-primary">View Reports</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-chat-dots text-warning" style="font-size: 2rem;"></i>
+                            <h5 class="mt-2">My Requests</h5>
+                            <p class="text-muted">Track your pet requests</p>
+                            <a href="{% url 'pets:my_requests' %}" class="btn btn-outline-warning">View Requests</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

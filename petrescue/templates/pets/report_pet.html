@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Report a Pet - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Report a Pet</h2>
+                    <p class="text-muted mb-0">Help us reunite pets with their families by providing detailed information.</p>
+                </div>
+                
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">Basic Information</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ pet_form.name.label_tag }}
+                                    {{ pet_form.name }}
+                                    {% if pet_form.name.help_text %}
+                                        <small class="form-text text-muted">{{ pet_form.name.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ pet_form.pet_type.label_tag }}
+                                    {{ pet_form.pet_type }}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ pet_form.breed.label_tag }}
+                                    {{ pet_form.breed }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ pet_form.color.label_tag }}
+                                    {{ pet_form.color }}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    {{ pet_form.size.label_tag }}
+                                    {{ pet_form.size }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    {{ pet_form.gender.label_tag }}
+                                    {{ pet_form.gender }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    {{ pet_form.age_estimate.label_tag }}
+                                    {{ pet_form.age_estimate }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Description Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">Description</h5>
+                            <div class="mb-3">
+                                {{ pet_form.description.label_tag }}
+                                {{ pet_form.description }}
+                                <small class="form-text text-muted">{{ pet_form.description.help_text }}</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ pet_form.distinctive_features.label_tag }}
+                                {{ pet_form.distinctive_features }}
+                                <small class="form-text text-muted">{{ pet_form.distinctive_features.help_text }}</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Location & Status Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">Location & Status</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ pet_form.status.label_tag }}
+                                    {{ pet_form.status }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ pet_form.found_date.label_tag }}
+                                    {{ pet_form.found_date }}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ pet_form.found_location.label_tag }}
+                                {{ pet_form.found_location }}
+                                <small class="form-text text-muted">{{ pet_form.found_location.help_text }}</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ pet_form.current_location.label_tag }}
+                                {{ pet_form.current_location }}
+                                <small class="form-text text-muted">{{ pet_form.current_location.help_text }}</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Contact Information Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">Contact Information</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ pet_form.contact_phone.label_tag }}
+                                    {{ pet_form.contact_phone }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ pet_form.contact_email.label_tag }}
+                                    {{ pet_form.contact_email }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Photo Upload Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">Photo</h5>
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    {{ image_form.image.label_tag }}
+                                    {{ image_form.image }}
+                                    <small class="form-text text-muted">Upload a clear photo of the pet to help with identification.</small>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    {{ image_form.caption.label_tag }}
+                                    {{ image_form.caption }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Errors -->
+                        {% if pet_form.errors or image_form.errors %}
+                            <div class="alert alert-danger">
+                                <h6>Please correct the following errors:</h6>
+                                {% for field, errors in pet_form.errors.items %}
+                                    {% for error in errors %}
+                                        <div>{{ field }}: {{ error }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for field, errors in image_form.errors.items %}
+                                    {% for error in errors %}
+                                        <div>{{ field }}: {{ error }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a href="{% url 'pets:home' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Submit Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Tips Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Tips for Better Results</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Include multiple clear photos from different angles</li>
+                        <li>Provide as much detail as possible in the description</li>
+                        <li>Mention any unique markings, scars, or accessories</li>
+                        <li>Be specific about the location where the pet was found/lost</li>
+                        <li>Update your contact information if it changes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
