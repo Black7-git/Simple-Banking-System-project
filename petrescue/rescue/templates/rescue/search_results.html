@@ -1,0 +1,88 @@
+{% extends 'rescue/base.html' %}
+{% load static %}
+
+{% block title %}Search Results - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Search Results</h1>
+            
+            {% if search_query %}
+                <p class="text-muted mb-4">
+                    Search results for: <strong>"{{ search_query }}"</strong>
+                </p>
+            {% endif %}
+            
+            {% if pets %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Found {{ pets.count }} pet{{ pets.count|pluralize }} matching your search criteria.
+                </div>
+                
+                <div class="row">
+                    {% for pet in pets %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                {% if pet.image %}
+                                    <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-paw fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {% if pet.name %}{{ pet.name }}{% else %}Unknown Name{% endif %}
+                                        <span class="badge bg-primary">{{ pet.get_pet_type_display }}</span>
+                                    </h5>
+                                    <p class="card-text">
+                                        <strong>Breed:</strong> {{ pet.breed|default:"Unknown" }}<br>
+                                        <strong>Color:</strong> {{ pet.color|default:"Unknown" }}<br>
+                                        <strong>Gender:</strong> {{ pet.get_gender_display }}<br>
+                                        {% if pet.age %}<strong>Age:</strong> {{ pet.age }} years old<br>{% endif %}
+                                        {% if pet.size %}<strong>Size:</strong> {{ pet.get_size_display }}<br>{% endif %}
+                                        <strong>Location Found:</strong> {{ pet.location_found }}<br>
+                                        <strong>Found:</strong> {{ pet.date_found|date:"M d, Y" }}
+                                    </p>
+                                    {% if pet.description %}
+                                        <p class="card-text">{{ pet.description|truncatewords:15 }}</p>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="card-footer bg-transparent">
+                                    <a href="{% url 'pet_detail' pet.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View Details
+                                    </a>
+                                    <a href="{% url 'request_pet' pet.id %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-hand-holding-heart me-1"></i>This Might Be Mine
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-5x text-muted mb-3"></i>
+                    <h4 class="text-muted">No matching pets found</h4>
+                    <p class="text-muted mb-4">
+                        We couldn't find any pets matching your search criteria. 
+                        Try using different keywords or check back later as new pets are added regularly.
+                    </p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="{% url 'search_lost_pet' %}" class="btn btn-info">
+                            <i class="fas fa-search me-1"></i>Search Again
+                        </a>
+                        <a href="{% url 'pet_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-1"></i>Browse All Pets
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

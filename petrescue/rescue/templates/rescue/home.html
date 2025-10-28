@@ -1,0 +1,178 @@
+{% extends 'rescue/base.html' %}
+{% load static %}
+
+{% block title %}Home - PetRescue{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Find Your Lost Pet</h1>
+                <p class="lead mb-4">PetRescue connects lost pets with their owners through our community-driven platform. Report found pets, search for your lost companion, and help reunite families.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'report_pet' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-plus me-2"></i>Report Found Pet
+                    </a>
+                    <a href="{% url 'search_lost_pet' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-search me-2"></i>Search Lost Pet
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="{% static 'images/hero-pet.png' %}" alt="Lost Pet" class="img-fluid" style="max-height: 400px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <i class="fas fa-paw fa-3x text-primary mb-3"></i>
+                        <h3 class="fw-bold">{{ stats.total_found }}</h3>
+                        <p class="text-muted">Pets Found</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <i class="fas fa-heart fa-3x text-success mb-3"></i>
+                        <h3 class="fw-bold">{{ stats.total_reunited }}</h3>
+                        <p class="text-muted">Pets Reunited</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <i class="fas fa-home fa-3x text-info mb-3"></i>
+                        <h3 class="fw-bold">{{ stats.total_adopted }}</h3>
+                        <p class="text-muted">Pets Adopted</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                        <h3 class="fw-bold">{{ stats.pending_requests }}</h3>
+                        <p class="text-muted">Pending Requests</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Found Pets -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-5">Recently Found Pets</h2>
+            </div>
+        </div>
+        
+        {% if recent_pets %}
+            <div class="row">
+                {% for pet in recent_pets %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            {% if pet.image %}
+                                <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-paw fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    {% if pet.name %}{{ pet.name }}{% else %}Unknown Name{% endif %}
+                                    <span class="badge bg-primary">{{ pet.get_pet_type_display }}</span>
+                                </h5>
+                                <p class="card-text">
+                                    <strong>Breed:</strong> {{ pet.breed|default:"Unknown" }}<br>
+                                    <strong>Color:</strong> {{ pet.color|default:"Unknown" }}<br>
+                                    <strong>Location:</strong> {{ pet.location_found }}<br>
+                                    <strong>Found:</strong> {{ pet.date_found|date:"M d, Y" }}
+                                </p>
+                                {% if pet.description %}
+                                    <p class="card-text">{{ pet.description|truncatewords:20 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-footer bg-transparent">
+                                <a href="{% url 'pet_detail' pet.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View Details
+                                </a>
+                                <a href="{% url 'request_pet' pet.id %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-hand-holding-heart me-1"></i>Claim/Adopt
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'pet_list' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-list me-2"></i>View All Found Pets
+                </a>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-paw fa-5x text-muted mb-3"></i>
+                <h4 class="text-muted">No pets found yet</h4>
+                <p class="text-muted">Be the first to report a found pet!</p>
+                <a href="{% url 'report_pet' %}" class="btn btn-primary">Report Found Pet</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2>How PetRescue Works</h2>
+                <p class="lead">Simple steps to help reunite pets with their families</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 text-center mb-4">
+                <div class="mb-3">
+                    <i class="fas fa-search fa-3x text-primary"></i>
+                </div>
+                <h4>1. Find a Pet</h4>
+                <p>Discover a lost pet in your area or search for your missing companion using our platform.</p>
+            </div>
+            
+            <div class="col-md-4 text-center mb-4">
+                <div class="mb-3">
+                    <i class="fas fa-edit fa-3x text-primary"></i>
+                </div>
+                <h4>2. Report or Search</h4>
+                <p>Report found pets with photos and details, or search our database for your lost pet.</p>
+            </div>
+            
+            <div class="col-md-4 text-center mb-4">
+                <div class="mb-3">
+                    <i class="fas fa-heart fa-3x text-primary"></i>
+                </div>
+                <h4>3. Reunite</h4>
+                <p>Connect with pet owners or finders to facilitate safe reunions and happy endings.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

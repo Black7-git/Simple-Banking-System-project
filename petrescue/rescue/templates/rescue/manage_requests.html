@@ -1,0 +1,179 @@
+{% extends 'rescue/base.html' %}
+{% load static %}
+
+{% block title %}Manage Requests - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4"><i class="fas fa-cog me-2"></i>Manage Pet Requests</h1>
+            
+            {% if requests %}
+                <div class="card shadow">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Requester</th>
+                                        <th>Type</th>
+                                        <th>Pet</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in requests %}
+                                        <tr>
+                                            <td>{{ request.id }}</td>
+                                            <td>
+                                                <div>
+                                                    <strong>{{ request.requester_name }}</strong><br>
+                                                    <small class="text-muted">{{ request.requester_email }}</small><br>
+                                                    <small class="text-muted">{{ request.requester_phone }}</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{% if request.request_type == 'claim' %}warning{% elif request.request_type == 'adopt' %}success{% else %}info{% endif %}">
+                                                    {{ request.get_request_type_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'pet_detail' request.pet.id %}" class="text-decoration-none">
+                                                    {% if request.pet.name %}{{ request.pet.name }}{% else %}Unknown{% endif %}
+                                                </a><br>
+                                                <small class="text-muted">{{ request.pet.get_pet_type_display }}</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{% if request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% elif request.status == 'completed' %}info{% else %}warning{% endif %}">
+                                                    {{ request.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ request.created_at|date:"M d, Y" }}</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#requestModal{{ request.id }}">
+                                                        <i class="fas fa-eye me-1"></i>View
+                                                    </button>
+                                                    {% if request.status == 'pending' %}
+                                                        <a href="{% url 'approve_request' request.id %}" class="btn btn-sm btn-success" data-confirm="Are you sure you want to approve this request?">
+                                                            <i class="fas fa-check me-1"></i>Approve
+                                                        </a>
+                                                        <a href="{% url 'reject_request' request.id %}" class="btn btn-sm btn-danger" data-confirm="Are you sure you want to reject this request?">
+                                                            <i class="fas fa-times me-1"></i>Reject
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-hand-holding-heart fa-5x text-muted mb-3"></i>
+                    <h4 class="text-muted">No requests found</h4>
+                    <p class="text-muted">There are no pet requests to manage at this time.</p>
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Request Detail Modals -->
+{% for request in requests %}
+<div class="modal fade" id="requestModal{{ request.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Request Details #{{ request.id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Requester Information</h6>
+                        <p><strong>Name:</strong> {{ request.requester_name }}</p>
+                        <p><strong>Email:</strong> {{ request.requester_email }}</p>
+                        <p><strong>Phone:</strong> {{ request.requester_phone }}</p>
+                        <p><strong>Request Type:</strong> 
+                            <span class="badge bg-{% if request.request_type == 'claim' %}warning{% elif request.request_type == 'adopt' %}success{% else %}info{% endif %}">
+                                {{ request.get_request_type_display }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Pet Information</h6>
+                        <p><strong>Pet:</strong> 
+                            <a href="{% url 'pet_detail' request.pet.id %}" class="text-decoration-none">
+                                {% if request.pet.name %}{{ request.pet.name }}{% else %}Unknown{% endif %}
+                            </a>
+                        </p>
+                        <p><strong>Type:</strong> {{ request.pet.get_pet_type_display }}</p>
+                        <p><strong>Breed:</strong> {{ request.pet.breed|default:"Unknown" }}</p>
+                        <p><strong>Location Found:</strong> {{ request.pet.location_found }}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <h6>Description</h6>
+                    <p>{{ request.description|linebreaks }}</p>
+                </div>
+                
+                {% if request.proof_of_ownership %}
+                    <div class="mb-3">
+                        <h6>Proof of Ownership</h6>
+                        <p>{{ request.proof_of_ownership|linebreaks }}</p>
+                    </div>
+                {% endif %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Request Status</h6>
+                        <p><strong>Status:</strong> 
+                            <span class="badge bg-{% if request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% elif request.status == 'completed' %}info{% else %}warning{% endif %}">
+                                {{ request.get_status_display }}
+                            </span>
+                        </p>
+                        <p><strong>Created:</strong> {{ request.created_at|date:"F d, Y \a\t g:i A" }}</p>
+                        {% if request.processed_by %}
+                            <p><strong>Processed by:</strong> {{ request.processed_by.username }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Admin Notes</h6>
+                        {% if request.admin_notes %}
+                            <p>{{ request.admin_notes|linebreaks }}</p>
+                        {% else %}
+                            <p class="text-muted">No admin notes</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                {% if request.status == 'pending' %}
+                    <a href="{% url 'approve_request' request.id %}" class="btn btn-success" data-confirm="Are you sure you want to approve this request?">
+                        <i class="fas fa-check me-1"></i>Approve
+                    </a>
+                    <a href="{% url 'reject_request' request.id %}" class="btn btn-danger" data-confirm="Are you sure you want to reject this request?">
+                        <i class="fas fa-times me-1"></i>Reject
+                    </a>
+                {% endif %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

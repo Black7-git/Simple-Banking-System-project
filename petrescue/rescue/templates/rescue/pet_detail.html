@@ -1,0 +1,121 @@
+{% extends 'rescue/base.html' %}
+{% load static %}
+
+{% block title %}{{ pet.name|default:"Unknown Pet" }} - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% if pet.image %}
+                                <img src="{{ pet.image.url }}" class="img-fluid rounded" alt="{{ pet.name }}">
+                            {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 300px;">
+                                    <i class="fas fa-paw fa-5x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h1 class="card-title">
+                                {% if pet.name %}{{ pet.name }}{% else %}Unknown Name{% endif %}
+                                <span class="badge bg-primary">{{ pet.get_pet_type_display }}</span>
+                            </h1>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <strong>Breed:</strong><br>
+                                    {{ pet.breed|default:"Unknown" }}
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Color:</strong><br>
+                                    {{ pet.color|default:"Unknown" }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <strong>Gender:</strong><br>
+                                    {{ pet.get_gender_display }}
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Size:</strong><br>
+                                    {{ pet.get_size_display|default:"Unknown" }}
+                                </div>
+                            </div>
+                            
+                            {% if pet.age %}
+                                <div class="row mb-3">
+                                    <div class="col-sm-6">
+                                        <strong>Age:</strong><br>
+                                        {{ pet.age }} years old
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mb-3">
+                                <strong>Location Found:</strong><br>
+                                {{ pet.location_found }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>Date Found:</strong><br>
+                                {{ pet.date_found|date:"F d, Y \a\t g:i A" }}
+                            </div>
+                            
+                            {% if pet.description %}
+                                <div class="mb-3">
+                                    <strong>Description:</strong><br>
+                                    {{ pet.description|linebreaks }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="d-grid gap-2 d-md-flex">
+                                <a href="{% url 'request_pet' pet.id %}" class="btn btn-primary">
+                                    <i class="fas fa-hand-holding-heart me-1"></i>Claim/Adopt This Pet
+                                </a>
+                                <a href="{% url 'pet_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i>Back to List
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Contact Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-phone me-2"></i>Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Found by:</strong> {{ pet.finder_name }}</p>
+                    <p><strong>Phone:</strong> <a href="tel:{{ pet.finder_phone }}">{{ pet.finder_phone }}</a></p>
+                    <p><strong>Email:</strong> <a href="mailto:{{ pet.finder_email }}">{{ pet.finder_email }}</a></p>
+                </div>
+            </div>
+            
+            <!-- Safety Tips -->
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Safety Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Meet in a public place</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Bring a friend or family member</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Ask for proof of ownership</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Trust your instincts</li>
+                        <li class="mb-0"><i class="fas fa-check text-success me-2"></i>Report any suspicious behavior</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'rescue/base.html' %}
+{% load static %}
+
+{% block title %}Request Pet - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h2 class="mb-0"><i class="fas fa-hand-holding-heart me-2"></i>Request Pet</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Pet Information Summary -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            {% if pet.image %}
+                                <img src="{{ pet.image.url }}" class="img-fluid rounded" alt="{{ pet.name }}">
+                            {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+                                    <i class="fas fa-paw fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h4>
+                                {% if pet.name %}{{ pet.name }}{% else %}Unknown Name{% endif %}
+                                <span class="badge bg-primary">{{ pet.get_pet_type_display }}</span>
+                            </h4>
+                            <p class="text-muted mb-2">
+                                <strong>Breed:</strong> {{ pet.breed|default:"Unknown" }} | 
+                                <strong>Color:</strong> {{ pet.color|default:"Unknown" }} | 
+                                <strong>Gender:</strong> {{ pet.get_gender_display }}
+                            </p>
+                            <p class="text-muted mb-0">
+                                <strong>Location Found:</strong> {{ pet.location_found }}<br>
+                                <strong>Date Found:</strong> {{ pet.date_found|date:"F d, Y" }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <p class="text-muted mb-4">
+                        Please provide your information and explain your relationship to this pet or why you want to adopt it. 
+                        All requests will be reviewed by our team before approval.
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.request_type.id_for_label }}" class="form-label">Request Type *</label>
+                            {{ form.request_type }}
+                            <div class="form-text">Choose whether you are claiming this as your lost pet or requesting to adopt it.</div>
+                            {% if form.request_type.errors %}
+                                <div class="text-danger">{{ form.request_type.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.requester_name.id_for_label }}" class="form-label">Your Name *</label>
+                                    {{ form.requester_name }}
+                                    {% if form.requester_name.errors %}
+                                        <div class="text-danger">{{ form.requester_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.requester_phone.id_for_label }}" class="form-label">Phone Number *</label>
+                                    {{ form.requester_phone }}
+                                    {% if form.requester_phone.errors %}
+                                        <div class="text-danger">{{ form.requester_phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.requester_email.id_for_label }}" class="form-label">Email Address *</label>
+                            {{ form.requester_email }}
+                            {% if form.requester_email.errors %}
+                                <div class="text-danger">{{ form.requester_email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description *</label>
+                            {{ form.description }}
+                            <div class="form-text">
+                                Please provide details about your relationship to this pet or why you want to adopt it. 
+                                Include any relevant information that would help verify your claim.
+                            </div>
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.proof_of_ownership.id_for_label }}" class="form-label">Proof of Ownership</label>
+                            {{ form.proof_of_ownership }}
+                            <div class="form-text">
+                                If claiming this pet, please describe any identifying features, microchip information, 
+                                or other proof that this is your pet.
+                            </div>
+                            {% if form.proof_of_ownership.errors %}
+                                <div class="text-danger">{{ form.proof_of_ownership.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Important:</strong> 
+                            <ul class="mb-0 mt-2">
+                                <li>All requests are subject to verification and approval</li>
+                                <li>You may be contacted for additional information</li>
+                                <li>False claims will result in immediate rejection</li>
+                                <li>We reserve the right to refuse any request</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'pet_detail' pet.id %}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane me-1"></i>Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

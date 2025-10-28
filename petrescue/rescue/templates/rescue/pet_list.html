@@ -1,0 +1,146 @@
+{% extends 'rescue/base.html' %}
+{% load static %}
+
+{% block title %}Found Pets - PetRescue{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Found Pets</h1>
+            
+            <!-- Search and Filter Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ search_query }}" placeholder="Search by name, breed, color, or location...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="pet_type" class="form-label">Pet Type</label>
+                            <select class="form-select" id="pet_type" name="pet_type">
+                                <option value="">All Types</option>
+                                <option value="dog" {% if pet_type == 'dog' %}selected{% endif %}>Dog</option>
+                                <option value="cat" {% if pet_type == 'cat' %}selected{% endif %}>Cat</option>
+                                <option value="bird" {% if pet_type == 'bird' %}selected{% endif %}>Bird</option>
+                                <option value="rabbit" {% if pet_type == 'rabbit' %}selected{% endif %}>Rabbit</option>
+                                <option value="hamster" {% if pet_type == 'hamster' %}selected{% endif %}>Hamster</option>
+                                <option value="other" {% if pet_type == 'other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="size" class="form-label">Size</label>
+                            <select class="form-select" id="size" name="size">
+                                <option value="">All Sizes</option>
+                                <option value="small" {% if size == 'small' %}selected{% endif %}>Small</option>
+                                <option value="medium" {% if size == 'medium' %}selected{% endif %}>Medium</option>
+                                <option value="large" {% if size == 'large' %}selected{% endif %}>Large</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-1"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            {% if pets %}
+                <div class="row">
+                    {% for pet in pets %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                {% if pet.image %}
+                                    <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-paw fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {% if pet.name %}{{ pet.name }}{% else %}Unknown Name{% endif %}
+                                        <span class="badge bg-primary">{{ pet.get_pet_type_display }}</span>
+                                    </h5>
+                                    <p class="card-text">
+                                        <strong>Breed:</strong> {{ pet.breed|default:"Unknown" }}<br>
+                                        <strong>Color:</strong> {{ pet.color|default:"Unknown" }}<br>
+                                        <strong>Gender:</strong> {{ pet.get_gender_display }}<br>
+                                        {% if pet.age %}<strong>Age:</strong> {{ pet.age }} years old<br>{% endif %}
+                                        {% if pet.size %}<strong>Size:</strong> {{ pet.get_size_display }}<br>{% endif %}
+                                        <strong>Location:</strong> {{ pet.location_found }}<br>
+                                        <strong>Found:</strong> {{ pet.date_found|date:"M d, Y" }}
+                                    </p>
+                                    {% if pet.description %}
+                                        <p class="card-text">{{ pet.description|truncatewords:15 }}</p>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="card-footer bg-transparent">
+                                    <a href="{% url 'pet_detail' pet.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View Details
+                                    </a>
+                                    <a href="{% url 'request_pet' pet.id %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-hand-holding-heart me-1"></i>Claim/Adopt
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if pets.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if pets.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if pet_type %}&pet_type={{ pet_type }}{% endif %}{% if size %}&size={{ size }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ pets.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if pet_type %}&pet_type={{ pet_type }}{% endif %}{% if size %}&size={{ size }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ pets.number }} of {{ pets.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if pets.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ pets.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if pet_type %}&pet_type={{ pet_type }}{% endif %}{% if size %}&size={{ size }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ pets.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if pet_type %}&pet_type={{ pet_type }}{% endif %}{% if size %}&size={{ size }}{% endif %}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-5x text-muted mb-3"></i>
+                    <h4 class="text-muted">No pets found</h4>
+                    <p class="text-muted">
+                        {% if search_query or pet_type or size %}
+                            Try adjusting your search criteria or <a href="{% url 'pet_list' %}">view all pets</a>.
+                        {% else %}
+                            No pets have been reported yet. <a href="{% url 'report_pet' %}">Be the first to report a found pet!</a>
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
